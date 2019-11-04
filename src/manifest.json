@@ -1,0 +1,38 @@
+{
+  "version": "1.0",
+  "manifest_version": 2,
+  "name": "React Browser Extension Boilerplate",
+  "description": "Boilerplate for minimal/clean react front end",
+  "icons": {
+    "16": "assets/icons/popup_16.png",
+    "32": "assets/icons/popup_32.png",
+    "128": "assets/icons/popup_128.png"
+  },
+  "background": {
+    "scripts": [
+      "lib/browser-polyfill.js",
+      "background.js"
+    ]
+  },
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "lib/browser-polyfill.js",
+      "content_scripts.js"
+    ]
+  }],
+  "browser_action": {
+    "default_icon": "assets/icons/popup_16.png",
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "./options.html",
+    "open_in_tab": true
+  },
+  "permissions": [
+    "http://*/",
+    "https://*/"
+  ]
+}
