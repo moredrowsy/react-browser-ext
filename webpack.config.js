@@ -1,10 +1,11 @@
 const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const dist_dir = 'dist';
 
-const config = {
+let config = {
   entry: {
     background: './src/background/index.js',
     content_scripts: './src/content_scripts/index.js',
@@ -12,10 +13,10 @@ const config = {
     options: './src/options/index.js'
   },
   output: {
-    path: path.resolve(__dirname, dist_dir),
-    filename: '[name].js'
+    filename: '[name].js',
+    path: path.resolve(__dirname, dist_dir)
   },
-  devtool: 'source-map',
+  devtool: process.env.NODE_ENV == 'production' ? 'source-map' : false,
   module: {
     rules: [
       {
@@ -40,6 +41,7 @@ const config = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
       chunks: ['popup'],
@@ -52,47 +54,30 @@ const config = {
       template: './src/options/index.html',
       filename: 'options.html'
     }),
-    // Copy manifest.json to output
+    // Copy all public assets to output
     new CopyWebpackPlugin([
       {
         // Take it directly from the node_modules
-        from: './src/manifest.json',
+        from: './**/**',
         // Where to copy the file in the destination folder
         to: './',
         // My extension relative to node_modules
-        context: './',
+        context: './public',
         // Don't keep the node_modules tree
         flatten: false
-      }
-    ]),
-    // Copy all src/assets to output
-    new CopyWebpackPlugin([
-      {
-        // Take it directly from the node_modules
-        from: './assets/**/**',
-        // Where to copy the file in the destination folder
-        to: './',
-        // My extension relative to node_modules
-        context: './src',
-        // Don't keep the node_modules tree
-        flatten: false
-      }
-    ]),
-    // Copy webextension-polyfill to output
-    new CopyWebpackPlugin([
-      {
-        // Take it directly from the node_modules
-        from:
-          './node_modules/webextension-polyfill/dist/browser-polyfill.min.js',
-        // Where to copy the file in the destination folder
-        to: 'lib/browser-polyfill.js',
-        // My extension relative to node_modules
-        context: './',
-        // Don't keep the node_modules tree
-        flatten: true
       }
     ])
   ]
 };
 
-module.exports = config;
+module.exports = (env, argv) => {
+  if (argv.mode === 'development') {
+    config.devtool = 'source-map';
+  }
+
+  if (argv.mode === 'production') {
+    config.devtool = false;
+  }
+
+  return config;
+};
