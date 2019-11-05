@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 
 import React, { Component } from 'react';
+import ReactLogo from '../assets/logo.svg';
 import './Popup.css';
 
 class Popup extends Component {
@@ -86,6 +87,7 @@ class Popup extends Component {
   render() {
     return (
       <div className='Popup' style={{ width: 100 }}>
+        <ReactLogo width='40px' height='40px' />
         <h4>{this.getStateData()}</h4>
       </div>
     );

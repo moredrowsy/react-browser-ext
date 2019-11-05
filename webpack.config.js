@@ -3,7 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
-const dist_dir = 'dist';
+const outpath = 'dist';
 
 let config = {
   entry: {
@@ -14,16 +14,36 @@ let config = {
   },
   output: {
     filename: '[name].js',
-    path: path.resolve(__dirname, dist_dir)
+    path: path.resolve(__dirname, outpath)
   },
   devtool: process.env.NODE_ENV == 'production' ? 'source-map' : false,
+  resolve: {
+    extensions: ['.js', '.jsx', '.mjs']
+  },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(js|jsx|mjs)$/,
         exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
+        loader: 'babel-loader',
+        options: {
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                targets: {
+                  browsers: ['defaults']
+                }
+              }
+            ],
+            '@babel/react',
+            {
+              plugins: [
+                '@babel/plugin-transform-runtime',
+                '@babel/plugin-proposal-class-properties'
+              ]
+            }
+          ]
         }
       },
       {
@@ -35,8 +55,24 @@ let config = {
         ]
       },
       {
-        test: /\.css$/i,
+        test: /\.css$/,
         use: ['style-loader', 'css-loader']
+      },
+      {
+        test: /\.svg$/,
+        use: ['@svgr/webpack']
+      },
+      {
+        test: /\.(png|jp(e*)g|gif)$/,
+        use: [
+          {
+            loader: 'url-loader',
+            options: {
+              limit: 8192, // Convert images < 8kb to base64 strings
+              name: './assets/img/[name].[ext]'
+            }
+          }
+        ]
       }
     ]
   },
