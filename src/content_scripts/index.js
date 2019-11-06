@@ -1,5 +1,3 @@
-'use strict';
-
 import browser from 'webextension-polyfill';
 
 console.log('content_scripts.js loaded');

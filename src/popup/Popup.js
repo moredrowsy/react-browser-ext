@@ -1,18 +1,20 @@
 import browser from 'webextension-polyfill';
-
 import React, { Component } from 'react';
-import ReactLogo from '../assets/logo.svg';
+
+import ReactLogo from '../assets/img/logo.svg';
+import distPng from '../assets/img/dist.png';
 import './Popup.css';
 
 class Popup extends Component {
   state = {
-    data: 'Hello from Popup.js',
+    data: 'Hello from Popup.js using React!',
     tab: null,
     port: null
   };
 
+  // example to setup tab, port, and messages
   async componentDidMount() {
-    // get port to background
+    // get port connection with background.js
     const port = await browser.runtime.connect({ name: 'popup' });
     this.setState({ port: port });
 
@@ -52,6 +54,7 @@ class Popup extends Component {
       console.log('Popup listening to onMessage:', message);
     });
 
+    // example to show how to scrape content page's html code
     const code = await this.getContentPage();
     console.log('Scraping content page from Popup componentDidMount()', code);
   }
@@ -80,15 +83,20 @@ class Popup extends Component {
     return document.documentElement.outerHTML; // return html code
   };
 
+  // example with class method to show state data
   getStateData = () => {
     return this.state.data;
   };
 
   render() {
     return (
-      <div className='Popup' style={{ width: 100 }}>
+      <div className='Popup' style={{ width: 600 }}>
         <ReactLogo width='40px' height='40px' />
-        <h4>{this.getStateData()}</h4>
+        <h3>{this.getStateData()}</h3>
+        <p>Below shows the project build output</p>
+        <p>
+          <img src={distPng} />
+        </p>
       </div>
     );
   }
