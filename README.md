@@ -1,6 +1,6 @@
 # React Extension Boilerpalte
 
-## Minimal react frontend for browser (Chrome/Firefox) extension with basic cross-browser API and essential webpack setup.
+## Minimal react frontend for browser (Chrome/Firefox) extension with basic cross-browser API and essential webpack setup
 
 This project was created for myself to learn webpack and the innards of react compilation.
 However, it's also meant for those who wants to quickly setup a browser extension without all the bloat from create-react-app eject or other boilerplates.

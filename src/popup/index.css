@@ -1,5 +1,5 @@
 @font-face {
-  font-family: 'Fira Code';
+  font-family: 'Cascadia Code';
   src: url("../assets/fonts/Cascadia.ttf");
   font-weight: normal;
   font-style: normal;
@@ -7,7 +7,7 @@
 
 body {
   margin: 0;
-  font-family: 'Fira Code', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  font-family: 'Cascadia Code', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
