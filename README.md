@@ -26,10 +26,6 @@ To reduce bloat, I only included packages that's essential for react, cross-brow
 - Jest tests
 - Redux
 
-TODO:
-
-- Add variable entry points to webpack
-
 ### Production build structure
 
 ![Image of production build](src/assets/img/dist.png)
