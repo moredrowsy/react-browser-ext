@@ -10,203 +10,94 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 /*******************************************************************************
  * FILE ENTRIES
  ******************************************************************************/
+const srcDir = 'src';
+const outDir = 'dist';
 
-/**
- * Files to add to webpack config entry from 'src' folder
- * Simply add to this list if you want to specify more files from pattern
- *
- * Pattern
- * -------
- * From 'src': [name]/index.js and/or [name]/index.html
- * Output to: [name].js and/or [name].html
- *
- * Ex: background/index.js compiles to background.js
- */
-const files = ['background', 'content_scripts', 'options', 'popup'];
-const srcPath = 'src';
-const outPath = 'dist';
-
-/**
- * Add entry to config: [name]/index.js
- * Add HtmlWebpackPlugin to config if [name]/index.html exists
- *
- * @param {Object} config Webpack config
- * @param {String} srcPath Source path name
- * @param {String} name Entry path name
- */
-function addEntryFileIfExist(config, srcPath, name, isDev) {
-  // check if index.js and index.html exists
-  const jsExist = fs.existsSync(path.resolve(srcPath, name, 'index.js'));
-  const htmlExist = fs.existsSync(path.resolve(srcPath, name, 'index.html'));
-
-  if (jsExist) config.entry[name] = `./${srcPath}/${name}/index.js`;
-  if (htmlExist) config.plugins.push(htmlInstance(srcPath, name, isDev));
-}
-
-/*******************************************************************************
- * PLUGINS
- ******************************************************************************/
-
-/**
- * HtmlWebpackPlugin instance for [name]/index.html
- *
- * @param {String} srcPath Source path name
- * @param {String} name Entry path name
- * @param {Boolean} isDev Is this development?
- */
-const htmlInstance = (srcPath, name, isDev) => {
-  // htlm minify options when development
-  const htmlMinifyOptions = {
-    collapseWhitespace: true,
-    removeComments: true,
-    removeRedundantAttributes: true,
-    removeScriptTypeAttributes: true,
-    removeStyleLinkTypeAttributes: true,
-    useShortDoctype: true
-  };
-
-  // html options for plugin constructor
-  let htmlOptions = {
-    inject: true,
-    chunks: [name],
-    template: `./${srcPath}/${name}/index.html`,
-    filename: `${name}.html`
-  };
-
-  // add minify options to html options when development
-  if (!isDev) htmlOptions['minify'] = htmlMinifyOptions;
-
-  return new HtmlWebpackPlugin(htmlOptions);
-};
-
-// CopyWebpackPlugin instance to copy public folder to output
-const copyPublicInstance = new CopyWebpackPlugin(
-  [
+// Delete or add more entries here!
+const build = {
+  entries: [
     {
-      // Take it directly from the node_modules
-      from: './**/**',
-      // Where to copy the file in the destination folder
-      to: './',
-      // My extension relative to node_modules
-      context: './public',
-      // Don't keep the node_modules tree
-      flatten: false
+      path: 'background/index.js',
+      output: 'background',
+      isReact: false
+    },
+    {
+      path: 'content_scripts/index.js',
+      output: 'content',
+      isReact: false
+    },
+    {
+      path: 'devtools/index.js',
+      output: 'devtools',
+      isReact: true
+    },
+    {
+      path: 'options/index.js',
+      output: 'options',
+      isReact: true
+    },
+    {
+      path: 'popup/index.js',
+      output: 'popup',
+      isReact: true
     }
   ],
-  { copyUnmodified: true }
-);
-
-// MiniCssExtractPlugin instance to distribute CSS file to output
-const miniCssInstance = new MiniCssExtractPlugin({
-  filename: 'assets/css/[name].css',
-  chunkFilename: 'assets/css/[id].css'
-});
-
-/*******************************************************************************
- * LOADERS & RULES
- ******************************************************************************/
-
-// Javascript loader rule
-const jsRule = {
-  test: /\.(js(x)?|mjs)$/,
-  exclude: /node_modules/,
-  loader: 'babel-loader',
-  options: {
-    presets: [
-      '@babel/preset-env',
-      '@babel/react',
-      {
-        plugins: [
-          '@babel/plugin-transform-runtime',
-          '@babel/plugin-proposal-class-properties'
-        ]
-      }
-    ]
+  // override default options
+  dev_options: {
+    outDir: 'dist',
+    extractCss: false,
+    extractFont: false,
+    htmlMinify: false,
+    sourceMap: true
+  },
+  prod_options: {
+    outDir: 'dist',
+    extractCss: true,
+    extractFont: true,
+    htmlMinify: true,
+    sourceMap: false
   }
 };
 
-// Html loader rule
-const htmlRule = {
-  test: /\.html$/,
-  use: [
-    {
-      loader: 'html-loader'
-    }
-  ]
-};
-
-// Fonts loader rule
-const fontRule = {
-  test: /\.(woff(2)?|eot|ttf|otf)$/,
-  use: [
-    {
-      loader: 'file-loader',
-      options: {
-        name: '[name].[ext]',
-        publicPath: '../../assets/fonts',
-        outputPath: 'assets/fonts/'
-      }
-    }
-  ]
-};
-
-// Images loader rule
-const imgRule = {
-  test: /\.(png|jp(e*)g|gif)$/,
-  use: [
-    {
-      loader: 'url-loader',
-      options: {
-        limit: 8192, // Convert images < 8kb to base64 strings
-        name: './assets/img/[name].[ext]'
-      }
-    }
-  ]
-};
-
-// SVG loader rule
-const svgRule = {
-  test: /\.svg$/,
-  use: ['@svgr/webpack']
-};
-
-/**
- * CSS loader rule
- *
- * @param {Boolean} isDev Is this development?
- */
-const cssRule = isDev => {
-  return {
-    test: /\.css$/,
-    use: [
-      // if dev, distribute CSS file; else use inline style-loader
-      isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
-      'css-loader',
-      {
-        loader: 'postcss-loader',
-        options: {
-          ident: 'postcss',
-          plugins: [require('postcss-preset-env')()]
-        }
-      }
-    ]
-  };
-};
-
-/*******************************************************************************
- * WEBPACK CONFIG LOGIC
- ******************************************************************************/
-
+// WEBPACK CONFIG LOGIC
 module.exports = (env, argv) => {
   const isDev = argv.mode === 'development';
 
+  // default options
+  let options = {
+    srcDir: srcDir || 'src',
+    outDir: outDir || 'dist',
+    extractCss: true,
+    extractFont: true,
+    htmlMinify: true,
+    sourceMap: false
+  };
+
+  // set options from build
+  if (isDev) {
+    const { dev_options } = build;
+    const keys = Object.keys(options);
+
+    keys.forEach(key => {
+      if (dev_options.hasOwnProperty(key)) options[key] = dev_options[key];
+    });
+  } else {
+    const { prod_options } = build;
+    const keys = Object.keys(options);
+
+    keys.forEach(key => {
+      if (prod_options.hasOwnProperty(key)) options[key] = prod_options[key];
+    });
+  }
+
+  // Webpack config
   let config = {
-    entry: {}, // entries added via addEntryFileIfExist()
+    entry: {},
     output: {
       filename: '[name].js',
-      path: path.resolve(__dirname, outPath)
+      path: path.resolve(__dirname, options.outDir)
     },
-    devtool: isDev ? 'source-map' : false,
+    devtool: options.sourceMap ? 'source-map' : false,
     stats: {
       assets: true,
       children: false,
@@ -217,32 +108,141 @@ module.exports = (env, argv) => {
       extensions: ['.js', '.jsx', '.mjs']
     },
     module: {
-      rules: [] // loaders added via addLoader()
+      rules: [
+        // Javascript
+        {
+          test: /\.(js(x)?|mjs)$/,
+          exclude: /node_modules/,
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env',
+              '@babel/react',
+              {
+                plugins: [
+                  '@babel/plugin-transform-runtime',
+                  '@babel/plugin-proposal-class-properties'
+                ]
+              }
+            ]
+          }
+        },
+        // Html
+        {
+          test: /\.html$/,
+          use: [
+            {
+              loader: 'html-loader'
+            }
+          ]
+        },
+        // CSS
+        {
+          test: /\.css$/,
+          use: [
+            // configure extract css or use inline compile
+            options.extractCss ? MiniCssExtractPlugin.loader : 'style-loader',
+            'css-loader',
+            {
+              loader: 'postcss-loader',
+              options: {
+                ident: 'postcss',
+                plugins: [require('postcss-preset-env')()]
+              }
+            }
+          ]
+        },
+        // Fonts
+        {
+          test: /\.(woff(2)?|eot|ttf|otf)$/,
+          use: [
+            {
+              loader: options.extractFont ? 'file-loader' : 'url-loader',
+              options: {
+                name: '[name].[ext]',
+                publicPath: 'assets/fonts',
+                outputPath: 'assets/fonts/'
+              }
+            }
+          ]
+        },
+        // Images
+        {
+          test: /\.(png|jp(e*)g|gif)$/,
+          use: [
+            {
+              loader: 'url-loader',
+              options: {
+                limit: 8192, // Convert images < 8kb to base64 strings
+                name: './assets/img/[name].[ext]'
+              }
+            }
+          ]
+        },
+        // SVG
+        {
+          test: /\.svg$/,
+          use: ['@svgr/webpack']
+        }
+      ]
     },
-    plugins: [] // plugins added via addPlugin()
+    plugins: [
+      new CleanWebpackPlugin(), // Clean public folder
+      // Copy public static files to output
+      new CopyWebpackPlugin(
+        [
+          {
+            // Take it directly from the node_modules
+            from: './**/**',
+            // Where to copy the file in the destination folder
+            to: './',
+            // My extension relative to node_modules
+            context: './public',
+            // Don't keep the node_modules tree
+            flatten: false
+          }
+        ],
+        { copyUnmodified: true }
+      ),
+      // Extract Css if plugin is called
+      new MiniCssExtractPlugin({
+        filename: '[name].css',
+        chunkFilename: '[id].css'
+      })
+    ]
   };
 
-  // Add loaders to module rules
-  const loaderRules = [
-    jsRule,
-    htmlRule,
-    cssRule(isDev),
-    fontRule,
-    imgRule,
-    svgRule
-  ];
-  loaderRules.forEach(rule => config.module.rules.push(rule));
+  // add entries
+  const { entries } = build;
+  entries.forEach(entry => {
+    config.entry[entry.output] = `./${options.srcDir}/${entry.path}`;
 
-  // Add plugins
-  const plugins = [
-    new CleanWebpackPlugin(), // Clean public folder
-    copyPublicInstance, // Copy all public assets to output
-    miniCssInstance // Distirbute CSS if minicss loader called
-  ];
-  plugins.forEach(plugin => config.plugins.push(plugin));
+    if (entry.isReact) {
+      // htlm minify options when development
+      const htmlMinifyOptions = {
+        collapseWhitespace: true,
+        removeComments: true,
+        removeRedundantAttributes: true,
+        removeScriptTypeAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        useShortDoctype: true
+      };
 
-  // Add file entries by name pattern
-  files.forEach(name => addEntryFileIfExist(config, srcPath, name, isDev));
+      // html options for plugin constructor
+      let file = path.parse(entry.path);
+      let htmlOptions = {
+        inject: true,
+        chunks: [entry.output],
+        template: `./${srcDir}/${file.dir}/${file.name}.html`,
+        filename: `${entry.output}.html`
+      };
+
+      // add minify options to html options when development
+      if (options.htmlMinify) htmlOptions['minify'] = htmlMinifyOptions;
+
+      config.plugins.push(new HtmlWebpackPlugin(htmlOptions));
+    }
+  });
 
   return config;
 };

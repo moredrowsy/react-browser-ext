@@ -1,6 +1,6 @@
 import browser from 'webextension-polyfill';
 
-console.log('content_scripts.js loaded');
+console.log('content.js loaded');
 
 // Listen for one-time messsage
 browser.runtime.onMessage.addListener((message, sender) => {

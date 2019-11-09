@@ -36,7 +36,7 @@ class Popup extends Component {
       console.log('Popup listning to port message:', msg);
     });
 
-    // send message to content_scripts
+    // send message to content script
     browser.tabs
       .sendMessage(this.state.tab.id, {
         from: 'popup',

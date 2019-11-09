@@ -26,6 +26,12 @@ To reduce bloat, I only included packages that's essential for react, cross-brow
 - Jest tests
 - Redux
 
+### Modifying the files
+
+Simply remove or add entries in the build object in webpack.config.js.
+
+If you remove components, such as 'devtools' folder, remember to update the 'public/manifest.json' entry.
+
 ### Production build structure
 
 ![Image of production build](src/assets/img/dist.png)

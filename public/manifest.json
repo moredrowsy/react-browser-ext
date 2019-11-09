@@ -1,8 +1,9 @@
 {
-  "version": "1.0",
   "manifest_version": 2,
   "name": "React Browser Extension Boilerplate",
+  "version": "1.0",
   "description": "Boilerplate for minimal/clean react front end",
+  "author": "",
   "icons": {
     "16": "assets/icons/icon16.png",
     "32": "assets/icons/icon32.png",
@@ -12,17 +13,31 @@
   "background": {
     "scripts": [
       "background.js"
-    ]
+    ],
+    "persistent": false
   },
   "content_scripts": [{
     "matches": [
       "<all_urls>"
     ],
+    "exclude_matches": [],
+    "run_at": "document_idle",
+    "all_frames": false,
+    "css": [],
     "js": [
-      "content_scripts.js"
-    ]
+      "content.js"
+    ],
+    "match_about_blank": false
   }],
+  "devtools_page": "devtools.html",
   "browser_action": {
+    "default_icons": {
+      "16": "assets/icons/icon16.png",
+      "32": "assets/icons/icon32.png",
+      "48": "assets/icons/icon48.png",
+      "128": "assets/icons/icon128.png"
+    },
+    "default_title": "React Boilerplate Popup",
     "default_icon": "assets/icons/icon32.png",
     "default_popup": "popup.html"
   },
