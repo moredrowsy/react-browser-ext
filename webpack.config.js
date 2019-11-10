@@ -160,8 +160,8 @@ module.exports = (env, argv) => {
               loader: options.extractFont ? 'file-loader' : 'url-loader',
               options: {
                 name: '[name].[ext]',
-                publicPath: 'assets/fonts',
-                outputPath: 'assets/fonts/'
+                publicPath: '../fonts',
+                outputPath: 'assets/fonts'
               }
             }
           ]
@@ -174,7 +174,8 @@ module.exports = (env, argv) => {
               loader: 'url-loader',
               options: {
                 limit: 8192, // Convert images < 8kb to base64 strings
-                name: './assets/img/[name].[ext]'
+                name: '[name].[ext]',
+                outputPath: 'assets/img'
               }
             }
           ]
@@ -206,8 +207,8 @@ module.exports = (env, argv) => {
       ),
       // Extract Css if plugin is called
       new MiniCssExtractPlugin({
-        filename: '[name].css',
-        chunkFilename: '[id].css'
+        filename: 'assets/css/[name].css',
+        chunkFilename: 'assets/css/[id].css'
       })
     ]
   };
