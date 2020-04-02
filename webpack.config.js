@@ -72,23 +72,14 @@ module.exports = (env, argv) => {
     htmlMinify: true,
     sourceMap: false
   };
+  let build_options = isDev ? 'dev_options' : 'prod_options';
 
   // set options from build
-  if (isDev) {
-    const { dev_options } = build;
-    const keys = Object.keys(options);
-
-    keys.forEach(key => {
-      if (dev_options.hasOwnProperty(key)) options[key] = dev_options[key];
-    });
-  } else {
-    const { prod_options } = build;
-    const keys = Object.keys(options);
-
-    keys.forEach(key => {
-      if (prod_options.hasOwnProperty(key)) options[key] = prod_options[key];
-    });
-  }
+  const keys = Object.keys(options);
+  keys.forEach(key => {
+    if (build[build_options].hasOwnProperty(key))
+      options[key] = build[build_options][key];
+  });
 
   // Webpack config
   let config = {
@@ -212,6 +203,9 @@ module.exports = (env, argv) => {
       })
     ]
   };
+
+  // remove CleanWebpackPlugin in development
+  if (isDev) config.plugins.shift();
 
   // add entries
   const { entries } = build;
