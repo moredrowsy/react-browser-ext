@@ -1,22 +1,20 @@
 {
-  "name": "react-browser-extension-boilerplate",
+  "name": "react-browser-ext-ts",
   "version": "1.0.0",
   "description": "Template for browser extension using react",
-  "repository": "https://github.com/moredrowsy/react-browser-extension-boilerplate",
-  "main": "src/popup/index.js",
+  "repository": "https://github.com/moredrowsy/react-browser-ext-ts",
+  "main": "dist/background/background.js",
   "scripts": {
     "build": "webpack --mode production && node update-manifest",
     "build-dev": "webpack --mode development --watch && node update-manifest"
   },
   "keywords": [
-    "react",
+    "boilerplate",
     "browser",
     "chrome",
-    "firfox",
     "extension",
-    "boilerplate",
-    "minimal",
-    "barebone"
+    "firfox",
+    "react"
   ],
   "author": "Thuan Tang",
   "license": "ISC",
