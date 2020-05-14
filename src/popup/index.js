@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 

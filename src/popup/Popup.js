@@ -9,7 +9,7 @@ class Popup extends Component {
   state = {
     data: 'Hello from Popup.js using React!',
     tab: null,
-    port: null
+    port: null,
   };
 
   // example to setup tab, port, and messages
@@ -21,18 +21,18 @@ class Popup extends Component {
     // get active tab
     const tabs = await browser.tabs.query({
       active: true,
-      currentWindow: true
+      currentWindow: true,
     });
     this.setState({ tab: tabs[0] });
 
     // send port message
     this.state.port.postMessage({
       text: 'Popup posting port message',
-      tab: this.state.tab
+      tab: this.state.tab,
     });
 
     // listen for port messages
-    this.state.port.onMessage.addListener(msg => {
+    this.state.port.onMessage.addListener((msg) => {
       console.log('Popup listning to port message:', msg);
     });
 
@@ -40,12 +40,12 @@ class Popup extends Component {
     browser.tabs
       .sendMessage(this.state.tab.id, {
         from: 'popup',
-        subject: 'DOMInfo'
+        subject: 'DOMInfo',
       })
-      .then(response => {
+      .then((response) => {
         console.log('Popup listening to onMessage response:', response);
       })
-      .catch(e =>
+      .catch((e) =>
         console.log(`Popup send message to content script failed: ${e.message}`)
       );
 
@@ -69,11 +69,11 @@ class Popup extends Component {
         // run the script in the context of the tab
         browser.tabs
           .executeScript(this.state.tab.id, { code: scriptToExec })
-          .then(scrapedHtml => {
+          .then((scrapedHtml) => {
             if (scrapedHtml) resolve(scrapedHtml[0]);
             else reject(`Could not scrape content page`);
           })
-          .catch(e => console.log(`Can not execute script: ${e.message}`));
+          .catch((e) => console.log(`Can not execute script: ${e.message}`));
       } else reject('Can not get content page of undefined tab');
     });
   };

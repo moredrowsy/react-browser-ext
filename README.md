@@ -1,4 +1,4 @@
-# React Extension Boilerpalte
+# React Extension Starter
 
 ## Minimal react frontend for browser (Chrome/Firefox) extension with basic cross-browser API and essential webpack setup
 
@@ -6,7 +6,7 @@ This project was created for myself to learn webpack and the innards of react co
 However, it's also meant for those who wants to quickly setup a browser extension without all the bloat from create-react-app eject or other boilerplates.
 To reduce bloat, I only included packages that's essential for react, cross-browser api, and webpack loaders that I deem essential for frontend (html, css, font and assets loading).
 
-### What this boilerplate has
+### What this has
 
 - Webpack compilation
   - React with babel loader
@@ -23,8 +23,6 @@ To reduce bloat, I only included packages that's essential for react, cross-brow
 - Browser launch with autoreload
 - Extension packaging
 - ESLint checking
-- Jest tests
-- Redux
 
 ### Modifying the files
 

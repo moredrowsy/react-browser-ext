@@ -19,28 +19,28 @@ const build = {
     {
       path: 'background/index.js',
       output: 'background',
-      isReact: false
+      isReact: false,
     },
     {
       path: 'content_scripts/index.js',
       output: 'content',
-      isReact: false
+      isReact: false,
     },
     {
       path: 'devtools/index.js',
       output: 'devtools',
-      isReact: true
+      isReact: true,
     },
     {
       path: 'options/index.js',
       output: 'options',
-      isReact: true
+      isReact: true,
     },
     {
       path: 'popup/index.js',
       output: 'popup',
-      isReact: true
-    }
+      isReact: true,
+    },
   ],
   // override default options
   dev_options: {
@@ -48,15 +48,15 @@ const build = {
     extractCss: false,
     extractFont: false,
     htmlMinify: false,
-    sourceMap: true
+    sourceMap: true,
   },
   prod_options: {
     outDir: 'dist',
     extractCss: true,
     extractFont: true,
     htmlMinify: true,
-    sourceMap: false
-  }
+    sourceMap: false,
+  },
 };
 
 // WEBPACK CONFIG LOGIC
@@ -70,13 +70,13 @@ module.exports = (env, argv) => {
     extractCss: true,
     extractFont: true,
     htmlMinify: true,
-    sourceMap: false
+    sourceMap: false,
   };
   let build_options = isDev ? 'dev_options' : 'prod_options';
 
   // set options from build
   const keys = Object.keys(options);
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (build[build_options].hasOwnProperty(key))
       options[key] = build[build_options][key];
   });
@@ -86,17 +86,17 @@ module.exports = (env, argv) => {
     entry: {},
     output: {
       filename: '[name].js',
-      path: path.resolve(__dirname, options.outDir)
+      path: path.resolve(__dirname, options.outDir),
     },
     devtool: options.sourceMap ? 'source-map' : false,
     stats: {
       assets: true,
       children: false,
       entrypoints: true,
-      modules: false
+      modules: false,
     },
     resolve: {
-      extensions: ['.js', '.jsx', '.mjs']
+      extensions: ['.js', '.jsx', '.mjs'],
     },
     module: {
       rules: [
@@ -112,20 +112,20 @@ module.exports = (env, argv) => {
               {
                 plugins: [
                   '@babel/plugin-transform-runtime',
-                  '@babel/plugin-proposal-class-properties'
-                ]
-              }
-            ]
-          }
+                  '@babel/plugin-proposal-class-properties',
+                ],
+              },
+            ],
+          },
         },
         // Html
         {
           test: /\.html$/,
           use: [
             {
-              loader: 'html-loader'
-            }
-          ]
+              loader: 'html-loader',
+            },
+          ],
         },
         // CSS
         {
@@ -138,10 +138,10 @@ module.exports = (env, argv) => {
               loader: 'postcss-loader',
               options: {
                 ident: 'postcss',
-                plugins: [require('postcss-preset-env')()]
-              }
-            }
-          ]
+                plugins: [require('postcss-preset-env')()],
+              },
+            },
+          ],
         },
         // Fonts
         {
@@ -152,10 +152,10 @@ module.exports = (env, argv) => {
               options: {
                 name: '[name].[ext]',
                 publicPath: '../fonts',
-                outputPath: 'assets/fonts'
-              }
-            }
-          ]
+                outputPath: 'assets/fonts',
+              },
+            },
+          ],
         },
         // Images
         {
@@ -166,17 +166,17 @@ module.exports = (env, argv) => {
               options: {
                 limit: 8192, // Convert images < 8kb to base64 strings
                 name: '[name].[ext]',
-                outputPath: 'assets/img'
-              }
-            }
-          ]
+                outputPath: 'assets/img',
+              },
+            },
+          ],
         },
         // SVG
         {
           test: /\.svg$/,
-          use: ['@svgr/webpack']
-        }
-      ]
+          use: ['@svgr/webpack'],
+        },
+      ],
     },
     plugins: [
       new CleanWebpackPlugin(), // Clean public folder
@@ -191,17 +191,17 @@ module.exports = (env, argv) => {
             // My extension relative to node_modules
             context: './public',
             // Don't keep the node_modules tree
-            flatten: false
-          }
+            flatten: false,
+          },
         ],
         { copyUnmodified: true }
       ),
       // Extract Css if plugin is called
       new MiniCssExtractPlugin({
         filename: 'assets/css/[name].css',
-        chunkFilename: 'assets/css/[id].css'
-      })
-    ]
+        chunkFilename: 'assets/css/[id].css',
+      }),
+    ],
   };
 
   // remove CleanWebpackPlugin in development
@@ -209,7 +209,10 @@ module.exports = (env, argv) => {
 
   // add entries
   const { entries } = build;
-  entries.forEach(entry => {
+  entries.forEach((entry) => {
+    // skip if entry file does not exist in path
+    if (!fs.existsSync(path.join(__dirname, srcDir, entry['path']))) return;
+
     config.entry[entry.output] = `./${options.srcDir}/${entry.path}`;
 
     if (entry.isReact) {
@@ -220,7 +223,7 @@ module.exports = (env, argv) => {
         removeRedundantAttributes: true,
         removeScriptTypeAttributes: true,
         removeStyleLinkTypeAttributes: true,
-        useShortDoctype: true
+        useShortDoctype: true,
       };
 
       // html options for plugin constructor
@@ -229,7 +232,7 @@ module.exports = (env, argv) => {
         inject: true,
         chunks: [entry.output],
         template: `./${srcDir}/${file.dir}/${file.name}.html`,
-        filename: `${entry.output}.html`
+        filename: `${entry.output}.html`,
       };
 
       // add minify options to html options when development
