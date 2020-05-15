@@ -1,4 +1,4 @@
-# React Extension Starter
+# React Browser Extension Starter
 
 ## Minimal react frontend for browser (Chrome/Firefox) extension with basic cross-browser API and essential webpack setup
 
